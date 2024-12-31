@@ -119,50 +119,65 @@ const Header = () => {
         </div>
       </header>
 
-      {/* Mobile Menu Overlay */}
+      {/* Mobile Menu Overlay - Updated to be a dropdown instead of fullscreen */}
       {isMenuOpen && (
-        <div className="fixed inset-0 bg-slate-900/98 backdrop-blur-md z-40 md:hidden">
-          <div className="flex flex-col items-center justify-center min-h-screen space-y-8 p-6">
-            {navItems.map((item, index) => (
-              <Link 
-                key={index} 
-                to={item.path}
-                className="flex items-center space-x-3 cursor-pointer group"
-                onClick={() => navigateTo(item.label, item.path)}
-              >
-                <span className="text-3xl group-hover:scale-110 transition-transform duration-300">
-                  {item.icon}
-                </span>
-                <span className={`text-xl ${
-                  currentPage === item.label 
-                    ? 'text-white' 
-                    : 'text-slate-400 group-hover:text-white'
-                } transition-colors duration-300`}>
-                  {item.label}
-                </span>
-              </Link>
-            ))}
-            <div className="pt-8 flex flex-col items-center space-y-4">
-              <Link 
-                to="/login"
-                className="w-48 py-3 rounded-xl text-slate-300 hover:text-white font-medium
-                         transition-all duration-300 hover:bg-slate-800"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Login
-              </Link>
-              <Link 
-                to="/signup"
-                className="w-48 py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-500 
-                         text-white font-medium shadow-lg shadow-indigo-500/25
-                         hover:shadow-xl hover:shadow-indigo-500/40 transition-all duration-300"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Sign Up
-              </Link>
+        <>
+          {/* Semi-transparent backdrop */}
+          <div 
+            className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-40 md:hidden"
+            onClick={() => setIsMenuOpen(false)}
+          ></div>
+          
+          {/* Dropdown Menu */}
+          <div className="fixed top-[88px] right-4 w-64 bg-slate-800/95 backdrop-blur-md rounded-xl 
+                         border border-slate-700/50 shadow-xl z-40 md:hidden
+                         animate-slideIn">
+            <div className="py-4">
+              {navItems.map((item, index) => (
+                <Link 
+                  key={index} 
+                  to={item.path}
+                  className="flex items-center space-x-3 px-6 py-3 cursor-pointer group
+                           hover:bg-slate-700/50 transition-colors"
+                  onClick={() => navigateTo(item.label, item.path)}
+                >
+                  <span className="text-2xl group-hover:scale-110 transition-transform duration-300">
+                    {item.icon}
+                  </span>
+                  <span className={`text-base ${
+                    currentPage === item.label 
+                      ? 'text-white' 
+                      : 'text-slate-400 group-hover:text-white'
+                  } transition-colors duration-300`}>
+                    {item.label}
+                  </span>
+                </Link>
+              ))}
+              
+              <div className="border-t border-slate-700/50 mt-2 pt-2 px-4 space-y-2">
+                <Link 
+                  to="/login"
+                  className="block w-full py-2 rounded-lg text-slate-300 hover:text-white 
+                           font-medium text-center transition-all duration-300 
+                           hover:bg-slate-700/50"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Login
+                </Link>
+                <Link 
+                  to="/signup"
+                  className="block w-full py-2 rounded-lg bg-gradient-to-r from-indigo-500 
+                           to-purple-500 text-white font-medium text-center
+                           shadow-lg shadow-indigo-500/25 hover:shadow-xl 
+                           hover:shadow-indigo-500/40 transition-all duration-300"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Sign Up
+                </Link>
+              </div>
             </div>
           </div>
-        </div>
+        </>
       )}
 
       {/* Content Spacer */}
