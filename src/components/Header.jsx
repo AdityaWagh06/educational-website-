@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { BrowserRouter as Router, Route, Routes, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState('Home');
   const navigate = useNavigate();
+  const location = useLocation();
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -19,9 +20,18 @@ const Header = () => {
 
   const navigateTo = (pageName, path) => {
     setCurrentPage(pageName);
+    setIsMenuOpen(false); // Close menu before navigation
     navigate(path);
-    setIsMenuOpen(false);
   };
+
+  // Update current page based on location
+  React.useEffect(() => {
+    const currentPath = location.pathname;
+    const currentNavItem = navItems.find(item => item.path === currentPath);
+    if (currentNavItem) {
+      setCurrentPage(currentNavItem.label);
+    }
+  }, [location]);
 
   return (
     <header className="relative bg-gradient-to-b from-slate-900 to-slate-900/80 backdrop-blur-sm border-b border-slate-800/50">
@@ -30,23 +40,25 @@ const Header = () => {
       
       <div className="container mx-auto flex items-center justify-between py-5 px-6 relative">
         {/* Logo */}
-        <div 
+        <Link 
+          to="/"
           className="flex items-center space-x-3 cursor-pointer group"
-          onClick={() => navigateTo('Home', '/')}
+          onClick={() => setCurrentPage('Home')}
         >
           <span className="text-4xl transform group-hover:scale-110 transition-transform duration-300">🌈</span>
           <h1 className="text-3xl font-bold bg-gradient-to-r from-white via-slate-200 to-indigo-400 bg-clip-text text-transparent">
             KidzWorld
           </h1>
-        </div>
+        </Link>
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center space-x-10">
           {navItems.map((item, index) => (
-            <div 
+            <Link 
               key={index} 
+              to={item.path}
               className={`flex items-center space-x-2 cursor-pointer group`}
-              onClick={() => navigateTo(item.label, item.path)}
+              onClick={() => setCurrentPage(item.label)}
             >
               <span className="text-2xl group-hover:scale-110 transition-transform duration-300">{item.icon}</span>
               <span className={`font-medium text-base ${
@@ -56,33 +68,33 @@ const Header = () => {
               } transition-colors duration-300`}>
                 {item.label}
               </span>
-            </div>
+            </Link>
           ))}
         </nav>
 
         {/* Desktop Auth Buttons */}
         <div className="hidden md:flex items-center space-x-4">
-          <button 
-            onClick={() => navigateTo('Login', '/login')}
+          <Link 
+            to="/login"
             className="px-5 py-2.5 rounded-xl text-slate-300 hover:text-white font-medium
                      transition-all duration-300 hover:bg-slate-800"
           >
             Login
-          </button>
-          <button 
-            onClick={() => navigateTo('SignUp', '/signup')}
+          </Link>
+          <Link 
+            to="/signup"
             className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-500 
                      text-white font-medium shadow-lg shadow-indigo-500/25
                      hover:shadow-xl hover:shadow-indigo-500/40 transform 
                      hover:-translate-y-0.5 transition-all duration-300"
           >
             Sign Up
-          </button>
+          </Link>
         </div>
 
         {/* Mobile Menu Toggle */}
         <button 
-          className="md:hidden text-slate-400 hover:text-white transition-colors p-2"
+          className="md:hidden text-slate-400 hover:text-white transition-colors p-2 z-50"
           onClick={toggleMenu}
         >
           {isMenuOpen ? (
@@ -96,11 +108,12 @@ const Header = () => {
 
         {/* Mobile Menu */}
         {isMenuOpen && (
-          <div className="md:hidden fixed inset-0 bg-slate-900/98 backdrop-blur-md z-50">
+          <div className="fixed inset-0 bg-slate-900/98 backdrop-blur-md z-40">
             <div className="flex flex-col items-center justify-center h-full space-y-8">
               {navItems.map((item, index) => (
-                <div 
+                <Link 
                   key={index} 
+                  to={item.path}
                   className="flex items-center space-x-3 cursor-pointer group"
                   onClick={() => navigateTo(item.label, item.path)}
                 >
@@ -114,24 +127,26 @@ const Header = () => {
                   } transition-colors duration-300`}>
                     {item.label}
                   </span>
-                </div>
+                </Link>
               ))}
               <div className="pt-8 flex flex-col items-center space-y-4">
-                <button 
-                  onClick={() => navigateTo('Login', '/login')}
+                <Link 
+                  to="/login"
                   className="w-48 py-3 rounded-xl text-slate-300 hover:text-white font-medium
                            transition-all duration-300 hover:bg-slate-800"
+                  onClick={() => setIsMenuOpen(false)}
                 >
                   Login
-                </button>
-                <button 
-                  onClick={() => navigateTo('SignUp', '/signup')}
+                </Link>
+                <Link 
+                  to="/signup"
                   className="w-48 py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-500 
                            text-white font-medium shadow-lg shadow-indigo-500/25
                            hover:shadow-xl hover:shadow-indigo-500/40 transition-all duration-300"
+                  onClick={() => setIsMenuOpen(false)}
                 >
                   Sign Up
-                </button>
+                </Link>
               </div>
             </div>
           </div>
