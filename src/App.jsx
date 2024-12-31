@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route } from 'react-router-dom';
 import Header from './components/Header';
 import HeroSection from './components/HeroSection';
 import CategorySection from './components/CategorySection';
@@ -15,6 +15,8 @@ import ProgramDetail from './components/ProgramDetail'; // Import the new Progra
 import GamesPage from './components/Games';
 import ContactPage from './components/Contact';
 import AboutUsPage from './components/AboutUs';
+import ProgramsOverview from './components/ProgramsOverview';
+import FeaturedPrograms from './components/FeaturedPrograms';
 
 function App() {
   return (
@@ -27,11 +29,13 @@ function App() {
           element={
             <>
               <HeroSection />
-              <CategorySection />
-              <NewsSection />
-              <QuizSection />
-              <CraftsSection />
-              <GamesSection />
+              <ProgramsOverview />
+              {/* <CategorySection /> */}
+              {/* <NewsSection /> */}
+              {/* <QuizSection /> */}
+              {/* <CraftsSection /> */}
+              {/* <GamesSection /> */}
+              
             </>
           }
         />
