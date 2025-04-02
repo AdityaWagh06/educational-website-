@@ -87,8 +87,10 @@ const Header = () => {
           <div className="hidden md:flex items-center space-x-4">
             <Link 
               to="/login"
-              className="px-5 py-2.5 rounded-xl text-slate-300 hover:text-white font-medium
-                       transition-all duration-300 hover:bg-slate-800"
+              className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-500 
+                       text-white font-medium shadow-lg shadow-indigo-500/25
+                       hover:shadow-xl hover:shadow-indigo-500/40 transform 
+                       hover:-translate-y-0.5 transition-all duration-300"
             >
               Login
             </Link>

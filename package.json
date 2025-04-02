@@ -12,11 +12,13 @@
     "deploy": "gh-pages -d dist"
   },
   "dependencies": {
+    "@clerk/clerk-react": "^5.24.2",
     "animate.css": "^4.1.1",
     "axios": "^1.7.8",
     "firebase": "^11.0.2",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-gravatar": "^2.6.3",
     "react-icons": "^5.3.0",
     "react-router-dom": "^6.28.0"
   },
@@ -34,7 +36,7 @@
     "globals": "^15.9.0",
     "postcss": "^8.4.49",
     "tailwindcss": "^3.4.16",
-    "vite": "^5.4.9"
+    "vite": "^5.4.14"
   },
   "homepage": "https://AdityaWagh06.github.io/educational-website-"
 }

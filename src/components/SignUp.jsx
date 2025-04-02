@@ -1,26 +1,41 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const SignUp = () => {
   const [formData, setFormData] = useState({
     username: '',
     email: '',
-    password: ''
+    password: '',
   });
+
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Form submitted:', formData);
+    setError('');
+    setSuccess('');
+    
+    try {
+      const response = await axios.post('http://localhost:5000/api/auth/signup', formData);
+      console.log('Signup Success:', response.data);
+      setSuccess('Account created successfully! Redirecting to login...');
+      setTimeout(() => navigate('/login'), 2000); // Redirect after 2 seconds
+    } catch (error) {
+      console.error('Signup failed:', error.response?.data?.message || error.message);
+      setError(error.response?.data?.message || 'Error during signup, please try again.');
+    }
   };
 
   return (
     <div className="relative bg-slate-900 min-h-screen py-24 px-6">
-      {/* Background gradient orbs */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -left-1/4 -top-1/4 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl"></div>
         <div className="absolute -right-1/4 -bottom-1/4 w-96 h-96 bg-rose-500/10 rounded-full blur-3xl"></div>
@@ -32,6 +47,9 @@ const SignUp = () => {
             Create Account
           </h2>
 
+          {error && <p className="text-red-500 text-center">{error}</p>}
+          {success && <p className="text-green-500 text-center">{success}</p>}
+
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
               <label className="block text-slate-300 mb-2 text-sm">Username</label>
@@ -40,9 +58,7 @@ const SignUp = () => {
                 name="username"
                 value={formData.username}
                 onChange={handleChange}
-                className="w-full bg-slate-800/50 border border-slate-700/50 rounded-xl px-4 py-3 
-                         text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50
-                         placeholder-slate-500"
+                className="w-full bg-slate-800/50 border border-slate-700/50 rounded-xl px-4 py-3 text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 placeholder-slate-500"
                 placeholder="Choose a username"
                 required
               />
@@ -54,9 +70,7 @@ const SignUp = () => {
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                className="w-full bg-slate-800/50 border border-slate-700/50 rounded-xl px-4 py-3 
-                         text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50
-                         placeholder-slate-500"
+                className="w-full bg-slate-800/50 border border-slate-700/50 rounded-xl px-4 py-3 text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 placeholder-slate-500"
                 placeholder="Enter your email"
                 required
               />
@@ -68,19 +82,14 @@ const SignUp = () => {
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
-                className="w-full bg-slate-800/50 border border-slate-700/50 rounded-xl px-4 py-3 
-                         text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50
-                         placeholder-slate-500"
+                className="w-full bg-slate-800/50 border border-slate-700/50 rounded-xl px-4 py-3 text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 placeholder-slate-500"
                 placeholder="Choose a password"
                 required
               />
             </div>
             <button
               type="submit"
-              className="w-full py-4 rounded-xl bg-gradient-to-r from-indigo-600 to-blue-600 
-                       text-white font-medium shadow-lg shadow-indigo-500/25
-                       hover:shadow-xl hover:shadow-indigo-500/40 transform 
-                       hover:-translate-y-0.5 transition-all duration-300"
+              className="w-full py-4 rounded-xl bg-gradient-to-r from-indigo-600 to-blue-600 text-white font-medium shadow-lg shadow-indigo-500/25 hover:shadow-xl hover:shadow-indigo-500/40 transform hover:-translate-y-0.5 transition-all duration-300"
             >
               Sign Up
             </button>
