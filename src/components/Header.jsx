@@ -1,15 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { account } from '../appwriteConfig'; // Adjust if needed
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState('Home');
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
   const navigate = useNavigate();
   const location = useLocation();
 
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
-  };
+  const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
   const navItems = [
     { label: 'Home', icon: '🏠', path: '/' },
@@ -24,7 +25,30 @@ const Header = () => {
     navigate(path);
   };
 
-  React.useEffect(() => {
+  // Check if logged in
+  useEffect(() => {
+    const checkLogin = async () => {
+      try {
+        await account.get();
+        setIsLoggedIn(true);
+      } catch {
+        setIsLoggedIn(false);
+      }
+    };
+    checkLogin();
+  }, [location]);
+
+  const handleLogout = async () => {
+    try {
+      await account.deleteSession('current');
+      setIsLoggedIn(false);
+      navigate('/login');
+    } catch (err) {
+      console.error('Logout failed:', err.message);
+    }
+  };
+
+  useEffect(() => {
     const currentPath = location.pathname;
     const currentNavItem = navItems.find(item => item.path === currentPath);
     if (currentNavItem) {
@@ -32,13 +56,8 @@ const Header = () => {
     }
   }, [location]);
 
-  // Prevent body scroll when menu is open
-  React.useEffect(() => {
-    if (isMenuOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'unset';
-    }
+  useEffect(() => {
+    document.body.style.overflow = isMenuOpen ? 'hidden' : 'unset';
     return () => {
       document.body.style.overflow = 'unset';
     };
@@ -48,12 +67,11 @@ const Header = () => {
     <>
       <header className="fixed top-0 left-0 right-0 bg-gradient-to-b from-slate-900 to-slate-900/80 backdrop-blur-sm border-b border-slate-800/50 z-30">
         <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/10 via-purple-500/10 to-pink-500/10"></div>
-        
         <div className="container mx-auto flex items-center justify-between py-5 px-6 relative">
           {/* Logo */}
           <Link 
-            to="/"
-            className="flex items-center space-x-3 cursor-pointer group relative z-50"
+            to="/" 
+            className="flex items-center space-x-3 cursor-pointer group relative z-50" 
             onClick={() => setCurrentPage('Home')}
           >
             <span className="text-4xl transform group-hover:scale-110 transition-transform duration-300">🌈</span>
@@ -85,24 +103,36 @@ const Header = () => {
 
           {/* Desktop Auth Buttons */}
           <div className="hidden md:flex items-center space-x-4">
-            <Link 
-              to="/login"
-              className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-500 
-                       text-white font-medium shadow-lg shadow-indigo-500/25
-                       hover:shadow-xl hover:shadow-indigo-500/40 transform 
-                       hover:-translate-y-0.5 transition-all duration-300"
-            >
-              Login
-            </Link>
-            <Link 
-              to="/signup"
-              className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-500 
-                       text-white font-medium shadow-lg shadow-indigo-500/25
-                       hover:shadow-xl hover:shadow-indigo-500/40 transform 
-                       hover:-translate-y-0.5 transition-all duration-300"
-            >
-              Sign Up
-            </Link>
+            {!isLoggedIn ? (
+              <>
+                <Link 
+                  to="/login"
+                  className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-500 
+                            text-white font-medium shadow-lg shadow-indigo-500/25
+                            hover:shadow-xl hover:shadow-indigo-500/40 transform 
+                            hover:-translate-y-0.5 transition-all duration-300"
+                >
+                  Login
+                </Link>
+                <Link 
+                  to="/signup"
+                  className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-500 
+                            text-white font-medium shadow-lg shadow-indigo-500/25
+                            hover:shadow-xl hover:shadow-indigo-500/40 transform 
+                            hover:-translate-y-0.5 transition-all duration-300"
+                >
+                  Sign Up
+                </Link>
+              </>
+            ) : (
+              <button
+                onClick={handleLogout}
+                className="px-5 py-2.5 rounded-xl bg-rose-600 text-white font-medium shadow-lg 
+                          hover:bg-rose-700 transition-all duration-300"
+              >
+                Logout
+              </button>
+            )}
           </div>
 
           {/* Mobile Menu Toggle */}
@@ -121,26 +151,19 @@ const Header = () => {
         </div>
       </header>
 
-      {/* Mobile Menu Overlay - Updated to be a dropdown instead of fullscreen */}
+      {/* Mobile Dropdown Menu */}
       {isMenuOpen && (
         <>
-          {/* Semi-transparent backdrop */}
-          <div 
-            className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-40 md:hidden"
-            onClick={() => setIsMenuOpen(false)}
-          ></div>
-          
-          {/* Dropdown Menu */}
+          <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-40 md:hidden" onClick={() => setIsMenuOpen(false)}></div>
           <div className="fixed top-[88px] right-4 w-64 bg-slate-800/95 backdrop-blur-md rounded-xl 
-                         border border-slate-700/50 shadow-xl z-40 md:hidden
-                         animate-slideIn">
+                          border border-slate-700/50 shadow-xl z-40 md:hidden animate-slideIn">
             <div className="py-4">
               {navItems.map((item, index) => (
                 <Link 
                   key={index} 
                   to={item.path}
                   className="flex items-center space-x-3 px-6 py-3 cursor-pointer group
-                           hover:bg-slate-700/50 transition-colors"
+                            hover:bg-slate-700/50 transition-colors"
                   onClick={() => navigateTo(item.label, item.path)}
                 >
                   <span className="text-2xl group-hover:scale-110 transition-transform duration-300">
@@ -155,34 +178,49 @@ const Header = () => {
                   </span>
                 </Link>
               ))}
-              
+
               <div className="border-t border-slate-700/50 mt-2 pt-2 px-4 space-y-2">
-                <Link 
-                  to="/login"
-                  className="block w-full py-2 rounded-lg text-slate-300 hover:text-white 
-                           font-medium text-center transition-all duration-300 
-                           hover:bg-slate-700/50"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Login
-                </Link>
-                <Link 
-                  to="/signup"
-                  className="block w-full py-2 rounded-lg bg-gradient-to-r from-indigo-500 
-                           to-purple-500 text-white font-medium text-center
-                           shadow-lg shadow-indigo-500/25 hover:shadow-xl 
-                           hover:shadow-indigo-500/40 transition-all duration-300"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Sign Up
-                </Link>
+                {!isLoggedIn ? (
+                  <>
+                    <Link 
+                      to="/login"
+                      className="block w-full py-2 rounded-xl bg-gradient-to-r from-indigo-500 
+                                to-purple-500 text-white font-medium text-center
+                                shadow-lg shadow-indigo-500/25 hover:shadow-xl 
+                                hover:shadow-indigo-500/40 transition-all duration-300"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      Login
+                    </Link>
+                    <Link 
+                      to="/signup"
+                      className="block w-full py-2 rounded-xl bg-gradient-to-r from-indigo-500 
+                                to-purple-500 text-white font-medium text-center
+                                shadow-lg shadow-indigo-500/25 hover:shadow-xl 
+                                hover:shadow-indigo-500/40 transition-all duration-300"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      Sign Up
+                    </Link>
+                  </>
+                ) : (
+                  <button
+                    onClick={() => {
+                      handleLogout();
+                      setIsMenuOpen(false);
+                    }}
+                    className="block w-full py-2 rounded-lg bg-rose-600 text-white font-medium text-center
+                              hover:bg-rose-700 transition-all duration-300"
+                  >
+                    Logout
+                  </button>
+                )}
               </div>
             </div>
           </div>
         </>
       )}
 
-      {/* Content Spacer */}
       <div className="h-[88px]"></div>
     </>
   );

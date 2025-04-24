@@ -1,36 +1,41 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { account, ID } from '../appwriteConfig';
 
 const SignUp = () => {
-  const [formData, setFormData] = useState({
-    username: '',
-    email: '',
-    password: '',
-  });
-
+  const [formData, setFormData] = useState({ username: '', email: '', password: '' });
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setSuccess('');
-    
+    setLoading(true);
+
     try {
-      const response = await axios.post('http://localhost:5000/api/auth/signup', formData);
-      console.log('Signup Success:', response.data);
-      setSuccess('Account created successfully! Redirecting to login...');
-      setTimeout(() => navigate('/login'), 2000); // Redirect after 2 seconds
-    } catch (error) {
-      console.error('Signup failed:', error.response?.data?.message || error.message);
-      setError(error.response?.data?.message || 'Error during signup, please try again.');
+      await account.create(ID.unique(), formData.email, formData.password, formData.username);
+      await account.createEmailPasswordSession(formData.email, formData.password);
+      setSuccess('Account created! Logging you in...');
+      setTimeout(() => navigate('/'), 1500);
+    } catch (err) {
+      console.error('Signup error:', err);
+      if (err.code === 409) {
+        setError('An account with this email already exists.');
+      } else if (err.code === 400 && err.message.includes("Invalid email")) {
+        setError('Please enter a valid email address.');
+      } else {
+        setError(err.message || 'Signup failed. Try again.');
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -46,7 +51,6 @@ const SignUp = () => {
           <h2 className="text-3xl font-bold text-center mb-8 bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">
             Create Account
           </h2>
-
           {error && <p className="text-red-500 text-center">{error}</p>}
           {success && <p className="text-green-500 text-center">{success}</p>}
 
@@ -58,7 +62,7 @@ const SignUp = () => {
                 name="username"
                 value={formData.username}
                 onChange={handleChange}
-                className="w-full bg-slate-800/50 border border-slate-700/50 rounded-xl px-4 py-3 text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 placeholder-slate-500"
+                className="w-full bg-slate-800/50 border border-slate-700/50 rounded-xl px-4 py-3 text-slate-200"
                 placeholder="Choose a username"
                 required
               />
@@ -70,7 +74,7 @@ const SignUp = () => {
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                className="w-full bg-slate-800/50 border border-slate-700/50 rounded-xl px-4 py-3 text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 placeholder-slate-500"
+                className="w-full bg-slate-800/50 border border-slate-700/50 rounded-xl px-4 py-3 text-slate-200"
                 placeholder="Enter your email"
                 required
               />
@@ -82,16 +86,19 @@ const SignUp = () => {
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
-                className="w-full bg-slate-800/50 border border-slate-700/50 rounded-xl px-4 py-3 text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 placeholder-slate-500"
+                className="w-full bg-slate-800/50 border border-slate-700/50 rounded-xl px-4 py-3 text-slate-200"
                 placeholder="Choose a password"
                 required
               />
             </div>
             <button
               type="submit"
-              className="w-full py-4 rounded-xl bg-gradient-to-r from-indigo-600 to-blue-600 text-white font-medium shadow-lg shadow-indigo-500/25 hover:shadow-xl hover:shadow-indigo-500/40 transform hover:-translate-y-0.5 transition-all duration-300"
+              disabled={loading}
+              className={`w-full py-4 rounded-xl bg-gradient-to-r from-indigo-600 to-blue-600 text-white font-medium hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300 ${
+                loading ? 'opacity-50 cursor-not-allowed' : ''
+              }`}
             >
-              Sign Up
+              {loading ? 'Creating account...' : 'Sign Up'}
             </button>
           </form>
 
