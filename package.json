@@ -8,8 +8,7 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d dist"
+    "predeploy": "npm run build"
   },
   "dependencies": {
     "@clerk/clerk-react": "^5.24.2",
@@ -33,11 +32,9 @@
     "eslint-plugin-react": "^7.37.0",
     "eslint-plugin-react-hooks": "^5.1.0-rc.0",
     "eslint-plugin-react-refresh": "^0.4.12",
-    "gh-pages": "^6.3.0",
     "globals": "^15.9.0",
     "postcss": "^8.4.49",
     "tailwindcss": "^3.4.16",
     "vite": "^5.4.14"
-  },
-  "homepage": "https://AdityaWagh06.github.io/educational-website-"
+  }
 }
