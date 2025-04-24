@@ -2,7 +2,7 @@
     "builds": [
       {
         "src": "index.html",
-        "use": "@vercel/vite"
+        "use": "@vercel/static"
       }
     ],
     "routes": [
