@@ -3,6 +3,6 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
 export default defineConfig({
-  base: './', // ✅ correct for Vercel to prevent white screen
+  base: './', // or simply remove the `base` field
   plugins: [react()],
 })

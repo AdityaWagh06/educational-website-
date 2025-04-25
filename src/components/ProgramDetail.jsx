@@ -4,6 +4,7 @@ import { useParams, Link } from 'react-router-dom';
 const ProgramDetail = () => {
   const { programName } = useParams();
 
+  // Program details object
   const programDetails = {
     'life-and-survival-skills': {
       title: 'Life and Survival Skills',
@@ -151,8 +152,10 @@ const ProgramDetail = () => {
     },
   };
 
+  // Fetching the program details based on the programName param from URL
   const program = programDetails[programName];
 
+  // If program doesn't exist, return a fallback message
   if (!program) {
     return <div>Program not found.</div>;
   }
