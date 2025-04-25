@@ -7,14 +7,12 @@ import Footer from './components/Footer';
 import SignUp from './components/SignUp';
 import Login from './components/login'; // Fixed case sensitivity
 import ProgramsPage from './components/Programs';
-import ProgramDetail from './components/ProgramDetail';
+import ProgramDetail from './components/ProgramDetail'; // Correct path to ProgramDetail
 import ContactPage from './components/Contact';
 import AboutUsPage from './components/AboutUs';
 import ProtectedRoute from './components/ProtectedRoute';
 import Dashboard from './components/Dashboard';
-import NotFound from './components/NotFound';
- // New auth guard
-// New 404 page
+import NotFound from './components/NotFound'; // New 404 page
 
 function App() {
   return (
@@ -33,14 +31,14 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<SignUp />} />
             <Route path="/programs" element={<ProgramsPage />} />
-            <Route path="/programs/:programId" element={<ProgramDetail />} />
+            <Route path="/programs/:programName" element={<ProgramDetail />} /> {/* Correct path */}
             <Route path="/contact" element={<ContactPage />} />
             <Route path="/about-us" element={<AboutUsPage />} />
 
-            {/* Protected Routes (example) */}
+            {/* Protected Routes */}
             <Route path="/dashboard" element={
               <ProtectedRoute>
-                <Dashboard /> {/* You'll need to create this component */}
+                <Dashboard />
               </ProtectedRoute>
             } />
 

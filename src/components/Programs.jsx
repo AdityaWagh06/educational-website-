@@ -61,6 +61,8 @@ const Programs = () => {
     },
   ];
 
+  console.log(programs); // Check if programs are available
+
   return (
     <div className="relative bg-slate-900 min-h-screen py-24 px-6">
       {/* Background gradient orbs */}
@@ -74,7 +76,7 @@ const Programs = () => {
         <h1 className="text-5xl font-bold text-center mb-4 bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">
           Our Amazing Programs
         </h1>
-        
+
         <p className="text-center text-lg text-slate-400 mb-16 max-w-3xl mx-auto">
           Embark on an exciting journey of learning and discovery with our specially designed programs for young minds!
         </p>
